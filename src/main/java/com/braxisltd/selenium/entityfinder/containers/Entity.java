@@ -15,4 +15,9 @@ public class Entity {
     public boolean matchesCriteria(Iterable<EntityConstraint> criterion) {
         return Predicates.and(criterion).apply(webElement);
     }
+
+
+    public <T> T make(Class<T> entityClass) {
+        return new EntityWrapper<T>(entityClass, webElement).build();
+    }
 }

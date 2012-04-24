@@ -1,4 +1,7 @@
 package com.braxisltd.selenium.entityfinder;
 
-public interface Finder {
+import com.google.common.base.Optional;
+
+public interface Finder<T> {
+    Optional<T> findFirst();
 }
