@@ -1,4 +1,4 @@
-package com.braxisltd.selenium.entityfinder.elements;
+package com.braxisltd.selenium.entityfinder.containers;
 
 import com.braxisltd.selenium.entityfinder.functions.EntityConstraint;
 import com.google.common.base.Predicates;
