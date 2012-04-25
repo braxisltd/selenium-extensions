@@ -6,8 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Lists;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -44,7 +43,6 @@ public class EntityFinder {
 
         private Class<T> entityClass;
         private List<EntityConstraint> entityCriteria = newArrayList();
-        private Multimap<FieldContext, Predicate<WebElement>> fieldConditions = LinkedListMultimap.create();
 
         private FinderContext(Class<T> entityClass) {
             this.entityClass = entityClass;
@@ -59,28 +57,22 @@ public class EntityFinder {
             }
         }
 
-        //TODO refactor this god-awful mess!
-        private List<Entity> findCandidates() {
-            final List<EntityConstraint> constraints = newArrayList(entityCriteria);
-            constraints.add(new EntityConstraint() {
-                public boolean apply(@Nullable WebElement input) {
-                    for (FieldContext fieldContext : fieldConditions.keys()) {
-                        Optional<WebElement> field = fieldContext.findField(input);
-                        if (!field.isPresent()) {
-                            return false;
-                        }
-                        for (Predicate<WebElement> fieldPredicate : fieldConditions.get(fieldContext)) {
-                            if (!fieldPredicate.apply(field.get())) {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
+        public List<T> findAll() {
+            return Lists.transform(findCandidates(), new Function<Entity, T>() {
+                public T apply(Entity input) {
+                    return input.make(entityClass);
                 }
             });
+        }
+
+        public FinderContext and() {
+            return this;
+        }
+
+        private List<Entity> findCandidates() {
             return newArrayList(filter(findAllEntities(), new Predicate<Entity>() {
                 public boolean apply(Entity input) {
-                    return input.matchesCriteria(constraints);
+                    return input.matchesCriteria(entityCriteria);
                 }
             }));
         }
@@ -98,10 +90,21 @@ public class EntityFinder {
             return simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
         }
 
-        public MatcherProvider where(FieldContext fieldContext) {
-            MatcherProvider matcherProvider = new MatcherProvider(this);
-            fieldConditions.put(fieldContext,matcherProvider);
-            return matcherProvider;
+        public FieldMatcherProvider<T> where(final FieldContext fieldContext) {
+            final FieldMatcherProvider<T> fieldMatcherProvider = new FieldMatcherProvider<T>(this);
+            entityCriteria.add(new EntityConstraint() {
+                public boolean apply(@Nullable WebElement input) {
+                    Optional<WebElement> field = fieldContext.findField(input);
+                    return field.isPresent() && fieldMatcherProvider.apply(field.get());
+                }
+            });
+            return fieldMatcherProvider;
+        }
+
+        public EntityMatcherProvider<T> where(T entity) {
+            EntityMatcherProvider<T> entityMatcherProvider = new EntityMatcherProvider<T>(this);
+            entityCriteria.add(entityMatcherProvider);
+            return entityMatcherProvider;
         }
     }
 }

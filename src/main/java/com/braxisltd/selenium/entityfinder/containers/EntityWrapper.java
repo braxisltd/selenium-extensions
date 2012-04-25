@@ -1,5 +1,6 @@
 package com.braxisltd.selenium.entityfinder.containers;
 
+import com.braxisltd.selenium.entityfinder.EntityContext;
 import com.braxisltd.selenium.entityfinder.FieldContext;
 import org.openqa.selenium.WebElement;
 
@@ -19,9 +20,19 @@ public class EntityWrapper<T> {
     public T build() {
         return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{entityClass}, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                return new FieldContext(entity, fieldClass(method));
+                if (methodIsLowerCamelCaseInterfaceName(method, entityClass)) {
+                    return new EntityContext(entity);
+                } else {
+                    return new FieldContext(entity, fieldClass(method));
+                }
             }
         });
+    }
+
+    private boolean methodIsLowerCamelCaseInterfaceName(Method method, Class<T> entityClass) {
+        String simpleName = entityClass.getSimpleName();
+        String lowerCamelCaseName = simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
+        return lowerCamelCaseName.equals(method.getName());
     }
 
     private String fieldClass(Method method) {

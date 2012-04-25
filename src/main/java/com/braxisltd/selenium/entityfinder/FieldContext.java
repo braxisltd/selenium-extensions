@@ -6,10 +6,9 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-public class FieldContext {
+public class FieldContext extends ResolutionContext {
 
     private String fieldClass;
-    private Optional<WebElement> fieldElement;
 
     public FieldContext(WebElement entity, String fieldClass) {
         this.fieldClass = fieldClass;
@@ -44,4 +43,5 @@ public class FieldContext {
     public int hashCode() {
         return fieldClass != null ? fieldClass.hashCode() : 0;
     }
+
 }
