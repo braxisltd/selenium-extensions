@@ -1,4 +1,4 @@
-package com.braxisltd.selenium.entityfinder;
+package com.braxisltd.selenium.entityfinder.functions;
 
 import com.google.common.base.Optional;
 import org.openqa.selenium.WebElement;

@@ -1,14 +1,14 @@
 package com.braxisltd.selenium.entityfinder;
 
+import com.braxisltd.selenium.entityfinder.context.EntityContext;
+import com.braxisltd.selenium.entityfinder.context.FieldContext;
+import com.braxisltd.selenium.entityfinder.util.DriverFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-import static com.braxisltd.selenium.entityfinder.Resolutions.attribute;
-import static com.braxisltd.selenium.entityfinder.Resolutions.id;
-import static com.braxisltd.selenium.entityfinder.Resolutions.text;
+import static com.braxisltd.selenium.entityfinder.functions.Resolvers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
@@ -21,7 +21,7 @@ public class EntityFinderResolvingTest {
 
     @Before
     public void setUp() throws Exception {
-        driver = new HtmlUnitDriver();
+        driver = DriverFactory.create();
         driver.get(getClass().getResource("EntityFinderResolvingTest.html").toString());
         entityFinder = new EntityFinder(driver);
         camera = entityFinder.createQuery(Camera.class);
@@ -50,10 +50,23 @@ public class EntityFinderResolvingTest {
         assertThat(d90.camera().resolve(id()), is("d90"));
     }
 
+    @Test
+    public void shouldResolveCheckedStatus() throws Exception {
+        Camera d90 = entityFinder.lookFor(camera).where(camera.model()).containsTest("D90").findFirst().get();
+        assertThat(d90.owned().resolve(checkableIsChecked()), is(true));
+    }
+
+    @Test
+    public void shouldResolveUncheckedStatus() throws Exception {
+        Camera d90 = entityFinder.lookFor(camera).where(camera.model()).containsTest("D300").findFirst().get();
+        assertThat(d90.owned().resolve(checkableIsChecked()), is(false));
+    }
+
     interface Camera {
         EntityContext camera();
         FieldContext make();
         FieldContext model();
+        FieldContext owned();
     }
 
 }

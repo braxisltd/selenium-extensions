@@ -1,6 +1,7 @@
 package com.braxisltd.selenium.entityfinder;
 
 import com.braxisltd.selenium.entityfinder.containers.Entity;
+import com.braxisltd.selenium.entityfinder.context.FieldContext;
 import com.braxisltd.selenium.entityfinder.functions.EntityConstraint;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;

@@ -1,7 +1,7 @@
 package com.braxisltd.selenium.entityfinder.containers;
 
-import com.braxisltd.selenium.entityfinder.EntityContext;
-import com.braxisltd.selenium.entityfinder.FieldContext;
+import com.braxisltd.selenium.entityfinder.context.EntityContext;
+import com.braxisltd.selenium.entityfinder.context.FieldContext;
 import org.openqa.selenium.WebElement;
 
 import java.lang.reflect.InvocationHandler;

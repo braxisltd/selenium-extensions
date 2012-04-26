@@ -1,5 +1,6 @@
-package com.braxisltd.selenium.entityfinder;
+package com.braxisltd.selenium.entityfinder.context;
 
+import com.braxisltd.selenium.entityfinder.functions.FieldResolver;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.openqa.selenium.WebElement;

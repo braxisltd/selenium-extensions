@@ -1,5 +1,6 @@
 package com.braxisltd.selenium.entityfinder;
 
+import com.braxisltd.selenium.entityfinder.functions.FieldConstraint;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import org.openqa.selenium.WebElement;
@@ -15,11 +16,15 @@ public class FieldMatcherProvider<T> implements Predicate<WebElement> {
     }
 
     public Finder<T> containsTest(final String text) {
-        condition = new Predicate<WebElement>() {
+        return has(new FieldConstraint() {
             public boolean apply(@Nullable WebElement input) {
                 return input.getText().contains(text);
             }
-        };
+        });
+    }
+
+    public Finder<T> has(FieldConstraint matcher) {
+        condition = matcher;
         return finderContext;
     }
 
